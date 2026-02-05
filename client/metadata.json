@@ -1,0 +1,5 @@
+{
+  "name": "Neon Leap: Retro Platformer",
+  "description": "A fully functional 2D side-scrolling platformer with physics, enemies, collectibles, and a high-score system, built with React and HTML5 Canvas.",
+  "requestFramePermissions": []
+}
