@@ -33,7 +33,8 @@ export class Player {
     } else if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
       if (this.vx > -PHYSICS.MAX_SPEED) this.vx -= PHYSICS.WALK_SPEED;
     } else {
-      this.vx *= PHYSICS.FRICTION;
+     this.vx *= 0.8; // 0.8 ya 0.7 rakho taaki player turant ruk jaye
+    if (Math.abs(this.vx) < 0.1) this.vx = 0;
     }
 
     // --- NEW JUMP LOGIC ---

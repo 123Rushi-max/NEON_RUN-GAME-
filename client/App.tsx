@@ -8,6 +8,7 @@ import HUD from './components/UI/HUD';
 import Menu from './components/UI/Menu';
 import MobileControls from './components/UI/MobileControls';
 
+
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(GameState.START);
   const [score, setScore] = useState(0);
@@ -34,6 +35,8 @@ const App: React.FC = () => {
 
   // Updated initGame to handle specific level loading
   const initGame = useCallback((level: number = 1) => {
+    keysRef.current = {}; 
+    mobileKeysRef.current = {};
     playerRef.current = new Player(100, 400);
     
     // Select level data based on input

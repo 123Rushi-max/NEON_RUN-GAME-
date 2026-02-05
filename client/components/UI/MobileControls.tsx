@@ -28,10 +28,12 @@ const MobileControls: React.FC<MobileControlsProps> = ({ onInput }) => {
         {/* Left Button */}
         <button
           className="w-16 h-16 bg-slate-800/80 border-2 border-cyan-500/50 rounded-full flex items-center justify-center active:bg-cyan-500/30 touch-none"
+          onContextMenu={(e) => e.preventDefault()}
           onTouchStart={handleTouchStart('ArrowLeft')}
           onTouchEnd={handleTouchEnd('ArrowLeft')}
           onMouseDown={handleTouchStart('ArrowLeft')} // For testing on PC mouse
           onMouseUp={handleTouchEnd('ArrowLeft')}
+          onMouseLeave={handleTouchEnd('ArrowLeft')}
         >
           <span className="text-3xl text-cyan-400">←</span>
         </button>
