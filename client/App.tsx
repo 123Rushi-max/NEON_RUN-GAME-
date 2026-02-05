@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GameState } from './types';
 import { CANVAS_WIDTH, CANVAS_HEIGHT, COLORS, INITIAL_LIVES } from './constants';
@@ -7,6 +6,7 @@ import { createLevel1 } from './game/World';
 import { checkPlatformCollisions, checkEnemyCollisions, checkCoinCollisions } from './game/Physics';
 import HUD from './components/UI/HUD';
 import Menu from './components/UI/Menu';
+import MobileControls from './components/UI/MobileControls'; // <--- NEW IMPORT
 
 const App: React.FC = () => {
   const [gameState, setGameState] = useState<GameState>(GameState.START);
@@ -14,11 +14,13 @@ const App: React.FC = () => {
   const [lives, setLives] = useState(INITIAL_LIVES);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // Fix: Initialized requestRef with null to provide the expected argument to useRef
   const requestRef = useRef<number | null>(null);
   const gameStateRef = useRef<GameState>(GameState.START);
-  const keysRef = useRef<{ [key: string]: boolean }>({});
   
+  // Input Refs
+  const keysRef = useRef<{ [key: string]: boolean }>({});
+  const mobileKeysRef = useRef<{ [key: string]: boolean }>({}); // <--- NEW REF FOR TOUCH
+
   // Game Objects
   const playerRef = useRef<Player>(new Player(50, 400));
   const worldRef = useRef(createLevel1());
@@ -46,6 +48,11 @@ const App: React.FC = () => {
     setGameState(GameState.PLAYING);
   }, []);
 
+  // <--- NEW HELPER FOR MOBILE INPUT
+  const handleMobileInput = useCallback((key: string, pressed: boolean) => {
+    mobileKeysRef.current[key] = pressed;
+  }, []);
+
   const gameLoop = useCallback(() => {
     if (gameStateRef.current === GameState.PLAYING) {
       const canvas = canvasRef.current;
@@ -55,8 +62,11 @@ const App: React.FC = () => {
       const player = playerRef.current;
       const { platforms, enemies, coins, finishLine } = worldRef.current;
 
-      // 1. Update Player
-      player.update(keysRef.current);
+      // <--- MERGE INPUTS (KEYBOARD + TOUCH)
+      const combinedKeys = { ...keysRef.current, ...mobileKeysRef.current };
+      
+      // 1. Update Player with combined inputs
+      player.update(combinedKeys);
 
       // 2. Physics & Collisions
       checkPlatformCollisions(player, platforms);
@@ -152,13 +162,13 @@ const App: React.FC = () => {
   }, [gameLoop]);
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-slate-950 overflow-hidden font-sans">
+    <div className="h-screen w-screen flex items-center justify-center bg-slate-950 overflow-hidden font-sans relative">
       <div className="relative shadow-2xl border-4 border-slate-800 rounded-lg overflow-hidden">
         <canvas
           ref={canvasRef}
           width={CANVAS_WIDTH}
           height={CANVAS_HEIGHT}
-          className="block"
+          className="block bg-slate-900"
         />
         
         <HUD score={score} lives={lives} onPause={handlePause} />
@@ -170,6 +180,11 @@ const App: React.FC = () => {
           onResume={handleResume} 
           onRestart={initGame}
         />
+
+        {/* <--- MOBILE CONTROLS (Only visible when playing) */}
+        {gameState === GameState.PLAYING && (
+           <MobileControls onInput={handleMobileInput} />
+        )}
       </div>
     </div>
   );
