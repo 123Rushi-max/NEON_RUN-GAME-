@@ -62,15 +62,15 @@ export class Player {
   }
 
   draw(ctx: CanvasRenderingContext2D, cameraX: number) {
-    // (Keep your existing draw code here)
+    const bob = Math.sin(Date.now() / 200 + this.x * 0.02) * 1.5;
     ctx.fillStyle = this.color;
     ctx.shadowBlur = 10;
     ctx.shadowColor = this.color;
-    ctx.fillRect(this.x - cameraX, this.y, this.width, this.height);
+    ctx.fillRect(this.x - cameraX, this.y + bob, this.width, this.height);
     
     ctx.fillStyle = 'white';
     const eyeX = this.vx >= 0 ? 25 : 5;
-    ctx.fillRect(this.x - cameraX + eyeX, this.y + 10, 8, 8);
+    ctx.fillRect(this.x - cameraX + eyeX, this.y + 10 + bob, 8, 8);
     ctx.shadowBlur = 0;
   }
 }
@@ -131,10 +131,11 @@ export class Enemy {
   draw(ctx: CanvasRenderingContext2D, cameraX: number) {
     if (this.isDead) return;
     
+    const pulse = 1 + Math.sin(Date.now() / 180 + this.x * 0.01) * 0.1;
     ctx.fillStyle = COLORS.ENEMY;
     ctx.shadowBlur = 15;
     ctx.shadowColor = COLORS.ENEMY;
-    ctx.fillRect(this.x - cameraX, this.y, this.width, this.height);
+    ctx.fillRect(this.x - cameraX, this.y, this.width, this.height * pulse);
     
     // Angry eyes
     ctx.fillStyle = 'white';

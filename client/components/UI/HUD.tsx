@@ -4,13 +4,28 @@ import React from 'react';
 interface HUDProps {
   score: number;
   lives: number;
+  level: number;
+  totalLevels: number;
+  progress: number;
   onPause: () => void;
 }
 
-const HUD: React.FC<HUDProps> = ({ score, lives, onPause }) => {
+const HUD: React.FC<HUDProps> = ({ score, lives, level, totalLevels, progress, onPause }) => {
+  const clampedProgress = Math.min(1, Math.max(0, progress));
   return (
     <div className="absolute top-0 left-0 w-full p-6 flex justify-between items-start pointer-events-none select-none">
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-3">
+          <span className="px-3 py-1 rounded-full bg-slate-800/80 text-cyan-300 text-xs border border-slate-700">
+            LEVEL {level} / {totalLevels}
+          </span>
+          <div className="w-40 h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+            <div
+              className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-[width] duration-150"
+              style={{ width: `${clampedProgress * 100}%` }}
+            />
+          </div>
+        </div>
         <div className="pixel-font text-white text-xl flex items-center gap-4">
           <span className="text-cyan-400">SCORE:</span> {score.toString().padStart(6, '0')}
         </div>

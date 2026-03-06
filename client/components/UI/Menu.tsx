@@ -6,12 +6,15 @@ import { ScoreService } from '../../services/api';
 interface MenuProps {
   state: GameState;
   score: number;
+  currentLevel: number;
+  totalLevels: number;
   onStart: () => void;
   onResume: () => void;
   onRestart: () => void;
+  onNextLevel: () => void;
 }
 
-const Menu: React.FC<MenuProps> = ({ state, score, onStart, onResume, onRestart }) => {
+const Menu: React.FC<MenuProps> = ({ state, score, currentLevel, totalLevels, onStart, onResume, onRestart, onNextLevel }) => {
   const [leaderboard, setLeaderboard] = useState<ScoreEntry[]>([]);
   const [name, setName] = useState('');
   const [saved, setSaved] = useState(false);
@@ -41,13 +44,14 @@ const Menu: React.FC<MenuProps> = ({ state, score, onStart, onResume, onRestart 
         {state === GameState.START && (
           <div className="text-center">
             <h1 className="pixel-font text-4xl text-cyan-400 mb-8 animate-pulse">NEON LEAP</h1>
-            <p className="text-slate-400 mb-8 leading-relaxed">
-              Navigate the neon platforms, collect amber fragments, and avoid the rogue rose entities.
+            <p className="text-slate-400 mb-6 leading-relaxed">
+              Run, leap, collect shards, and clear all {totalLevels} neon worlds. New levels include skyline rooftops and cosmic driftfields.
             </p>
-            <div className="space-y-4 mb-8 text-sm text-left bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+            <div className="space-y-3 mb-8 text-sm text-left bg-slate-800/50 p-4 rounded-lg border border-slate-700">
               <div className="flex justify-between"><span className="text-slate-400">MOVE:</span> <span className="text-white">A / D or Arrow Keys</span></div>
-              <div className="flex justify-between"><span className="text-slate-400">JUMP:</span> <span className="text-white">SPACE or W or Up</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">JUMP:</span> <span className="text-white">SPACE or W or Up (double jump)</span></div>
               <div className="flex justify-between"><span className="text-slate-400">PAUSE:</span> <span className="text-white">ESC</span></div>
+              <div className="flex justify-between"><span className="text-slate-400">TIP:</span> <span className="text-white">Momentum + trailing glow helps line up jumps.</span></div>
             </div>
             <button
               onClick={onStart}
@@ -72,7 +76,7 @@ const Menu: React.FC<MenuProps> = ({ state, score, onStart, onResume, onRestart 
                 onClick={onRestart}
                 className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 rounded-xl"
               >
-                RESTART
+                RESTART LEVEL
               </button>
             </div>
           </div>
@@ -110,7 +114,7 @@ const Menu: React.FC<MenuProps> = ({ state, score, onStart, onResume, onRestart 
               onClick={onRestart}
               className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-4 rounded-xl mb-8"
             >
-              PLAY AGAIN
+              RESTART LEVEL
             </button>
 
             <div className="text-left border-t border-slate-800 pt-6">
@@ -129,16 +133,34 @@ const Menu: React.FC<MenuProps> = ({ state, score, onStart, onResume, onRestart 
 
         {state === GameState.LEVEL_COMPLETE && (
           <div className="text-center">
-            <h2 className="pixel-font text-3xl text-green-400 mb-8">LEVEL CLEARED!</h2>
+            <h2 className="pixel-font text-3xl text-green-400 mb-4">LEVEL {currentLevel} CLEARED!</h2>
             <div className="text-4xl text-white font-bold mb-8">
               TOTAL SCORE: <span className="text-cyan-400">{score}</span>
             </div>
-            <button
-              onClick={onRestart}
-              className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-4 rounded-xl"
-            >
-              PLAY AGAIN
-            </button>
+            {currentLevel < totalLevels ? (
+              <div className="space-y-4">
+                <p className="text-slate-400">Ready for level {currentLevel + 1}? Expect tighter gaps and faster patrols.</p>
+                <button
+                  onClick={onNextLevel}
+                  className="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold py-4 rounded-xl"
+                >
+                  NEXT LEVEL
+                </button>
+                <button
+                  onClick={onRestart}
+                  className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-xl"
+                >
+                  REPLAY LEVEL {currentLevel}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={onStart}
+                className="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-4 rounded-xl"
+              >
+                PLAY AGAIN
+              </button>
+            )}
           </div>
         )}
       </div>
